@@ -43,3 +43,12 @@ Future<List<Usuario>> getAllUsers() async {
       .where((usuario) => usuario.email != "admin@nutrimate.com")
       .toList();
 }
+
+Future<List<Recipe>> getAllRecetasSugeridas() async {
+  final QuerySnapshot snapshot = await db.collection('recetas').get();
+  return snapshot.docs.map((doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    data['id'] = doc.id;
+    return Recipe.fromMap(data);
+  }).toList();
+}

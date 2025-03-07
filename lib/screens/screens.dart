@@ -10,3 +10,5 @@ export 'package:NutriMate/screens/chart_screen.dart';
 export 'package:NutriMate/screens/home_screen.dart';
 export 'package:NutriMate/screens/tab_screen.dart';
 export 'package:NutriMate/screens/user_edit.dart';
+export 'package:NutriMate/screens/insert_screen.dart';
+export 'package:NutriMate/screens/menu_especial_screen.dart';

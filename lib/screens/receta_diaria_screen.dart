@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:NutriMate/providers/user_provider.dart';
 
 import '../widgets/widgets.dart';
+import 'screens.dart';
 
 class RecetaDiariaScreen extends StatefulWidget {
   const RecetaDiariaScreen({super.key, required this.receta});
@@ -25,6 +26,18 @@ class _RecetaDiariaScreenState extends State<RecetaDiariaScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => InsertScreen()),
+                    );
+                  },
+                  child: const Text('Cambiar menú'),
+                ),
+              ),
               _FoodImage(imageUrl: widget.receta.imageUrl),
               const Text(
                 'Prepara estos ingredientes',
