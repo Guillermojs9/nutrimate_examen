@@ -45,7 +45,7 @@ Future<List<Usuario>> getAllUsers() async {
 }
 
 Future<List<Recipe>> getAllRecetasSugeridas() async {
-  final QuerySnapshot snapshot = await db.collection('recetas').get();
+  final QuerySnapshot snapshot = await db.collection('menu_especial').get();
   return snapshot.docs.map((doc) {
     final data = doc.data() as Map<String, dynamic>;
     data['id'] = doc.id;

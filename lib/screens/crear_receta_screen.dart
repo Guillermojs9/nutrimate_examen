@@ -66,8 +66,8 @@ class CrearRecetaScreenState extends State<CrearRecetaScreen> {
         type: selectedMealType!,
         category: selectedCategory!,
         calories: caloriesController.text.isNotEmpty
-            ? double.parse(caloriesController.text)
-            : 0.0,
+            ? int.parse(caloriesController.text)
+            : 0,
       );
 
       try {

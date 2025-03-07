@@ -1,4 +1,5 @@
 import 'package:NutriMate/screens/screens.dart';
+import 'package:NutriMate/services/firebase_menu_service.dart';
 import 'package:NutriMate/services/firebase_service.dart';
 import 'package:NutriMate/widgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,7 @@ class _MenuEspecialScreenState extends State<MenuEspecialScreen> {
     final recetasSugeridas = await getAllRecetasSugeridas();
     setState(() {
       recetas = recetasSugeridas;
+      print("Numero de recetas" + recetas.length.toString());
     });
   }
 
@@ -46,7 +48,8 @@ class _MenuEspecialScreenState extends State<MenuEspecialScreen> {
           separatorBuilder: (context, index) => const Divider(),
           itemBuilder: (context, index) {
             final receta = recetas[index];
-            final nombreReceta = receta.name[0];
+            final nombreReceta = receta.name;
+            print("Ingrediente" + receta.ingredients.length.toString());
             final fotoReceta = receta.imageUrl[0];
             final nIngredientes = receta.ingredients.length;
             return InkWell(
@@ -65,6 +68,55 @@ class _MenuEspecialScreenState extends State<MenuEspecialScreen> {
                 ),
                 title: Text(nombreReceta),
                 subtitle: Text('Numero de ingredientes: ${nIngredientes}'),
+                trailing: IconButton(
+                  icon: Icon(Icons.delete, color: Colors.red),
+                  onPressed: () async {
+                    bool confirmar = await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Eliminar receta'),
+                              content: Text(
+                                  'Estás seguro de que deseas eliminar esta receta?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(false),
+                                  child: Text('Cancelar'),
+                                ),
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(true),
+                                  child: Text('Eliminar'),
+                                  style: TextButton.styleFrom(
+                                      foregroundColor: Colors.red),
+                                ),
+                              ],
+                            );
+                          },
+                        ) ??
+                        false;
+                    if (confirmar) {
+                      try {
+                        await deleteReceta(receta.name);
+        
+                        setState(() {
+                          recetas.removeAt(index);
+                        });
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text('Receta eliminada correctamente')),
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text('Error al eliminar la receta: $e')),
+                        );
+                      }
+                    }
+                  },
+                ),
               ),
             );
           },

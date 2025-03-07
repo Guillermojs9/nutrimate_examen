@@ -20,6 +20,7 @@ class InsertScreenState extends State<InsertScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController imageUrlController = TextEditingController();
   final TextEditingController caloriesController = TextEditingController();
+  final TextEditingController ingredientsController = TextEditingController();
 
   final List<String> recipeCategories = [
     "Aumento masa muscular",
@@ -37,14 +38,7 @@ class InsertScreenState extends State<InsertScreen> {
   String? selectedMealTypeKey;
   MealType? selectedMealType;
 
-  List<Map<String, dynamic>> ingredients = [];
   List<String> instructions = [];
-
-  void addIngredient() {
-    setState(() {
-      ingredients.add({"ingredientName": "", "isSelected": false});
-    });
-  }
 
   void addInstruction() {
     setState(() {
@@ -52,7 +46,29 @@ class InsertScreenState extends State<InsertScreen> {
     });
   }
 
+  List<Map<String, dynamic>> parseIngredients(String ingredientsText) {
+    List<Map<String, dynamic>> result = [];
+
+    if (ingredientsText.trim().isEmpty) {
+      return result;
+    }
+
+    List<String> ingredientsList = ingredientsText.split(',');
+
+    for (String ingredient in ingredientsList) {
+      String trimmedIngredient = ingredient.trim();
+      if (trimmedIngredient.isNotEmpty) {
+        result.add({"ingredientName": trimmedIngredient, "isSelected": false});
+      }
+    }
+
+    return result;
+  }
+
   void crearReceta() async {
+    List<Map<String, dynamic>> ingredients =
+        parseIngredients(ingredientsController.text);
+
     if (formKey.currentState!.validate() &&
         selectedCategory != null &&
         selectedMealType != null &&
@@ -66,18 +82,22 @@ class InsertScreenState extends State<InsertScreen> {
         type: selectedMealType!,
         category: selectedCategory!,
         calories: caloriesController.text.isNotEmpty
-            ? double.parse(caloriesController.text)
-            : 0.0,
+            ? int.parse(caloriesController.text)
+            : 0,
       );
+      print("Nombre" + nuevaReceta.name);
+      print("Imagen" + nuevaReceta.imageUrl);
+      print("Ingredientes" + nuevaReceta.ingredients.length.toString());
 
       try {
-        await FirebaseFirestore.instance.collection('recetas').add({
+        await FirebaseFirestore.instance.collection('menu_especial').add({
           'name': nuevaReceta.name,
           'imageUrl': nuevaReceta.imageUrl,
           'ingredients': nuevaReceta.ingredients,
           'instructions': nuevaReceta.instructions,
           'type': nuevaReceta.type.toString().split('.').last,
           'category': nuevaReceta.category,
+          'calories': nuevaReceta.calories,
         });
 
         await QuickAlert.show(
@@ -87,7 +107,6 @@ class InsertScreenState extends State<InsertScreen> {
           showConfirmBtn: true,
           confirmBtnText: "OK",
           confirmBtnColor: AppTheme.primary,
-          barrierDismissible: false,
           onConfirmBtnTap: () {
             Navigator.of(context).pop();
             Navigator.of(context).pop();
@@ -189,41 +208,14 @@ class InsertScreenState extends State<InsertScreen> {
                 Text("Ingredientes",
                     style:
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                ...ingredients.asMap().entries.map((entry) {
-                  int index = entry.key;
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            decoration:
-                                InputDecoration(labelText: "Ingrediente"),
-                            onChanged: (value) {
-                              ingredients[index]["ingredientName"] = value;
-                            },
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
-                            setState(() {
-                              ingredients.removeAt(index);
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-                SizedBox(height: 10),
-                ElevatedButton.icon(
-                  onPressed: addIngredient,
-                  icon: Icon(
-                    Icons.add,
-                    color: Colors.white,
+                TextFormField(
+                  controller: ingredientsController,
+                  decoration: InputDecoration(
+                    labelText: "Ingredientes",
                   ),
-                  label: Text("Añadir ingrediente"),
+                  maxLines: 3,
+                  validator: (value) =>
+                      value!.isEmpty ? "Ingresa al menos un ingrediente" : null,
                 ),
                 SizedBox(height: 20),
                 Text("Instrucciones",

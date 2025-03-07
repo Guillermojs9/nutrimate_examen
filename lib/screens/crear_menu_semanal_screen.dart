@@ -1,4 +1,5 @@
 import 'package:NutriMate/models/entities.dart';
+import 'package:NutriMate/services/firebase_menu_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:NutriMate/providers/user_provider.dart';

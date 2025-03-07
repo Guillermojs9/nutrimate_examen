@@ -1,6 +1,10 @@
 import 'package:NutriMate/models/entities.dart';
 import 'package:NutriMate/services/firebase_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+final FirebaseFirestore db = FirebaseFirestore.instance;
 
 Future<void> insertMenuDiario(MenuDiario menuDiario) async {
   final Map<String, dynamic> menu = menuDiario.toMap();
@@ -91,4 +95,17 @@ Future<List<Recipe>> loadGrasas() async {
 Future<List<Recipe>> loadAumentoMusculo() async {
   final recetas = await getRecetasPorCategoria('Aumento masa muscular');
   return recetas;
+}
+
+Future<void> deleteReceta(String nombreReceta) async {
+  final QuerySnapshot recipeQuery = await db
+      .collection('menu_especial')
+      .where('name', isEqualTo: nombreReceta)
+      .get();
+  if (recipeQuery.docs.isEmpty) {
+    throw Exception("Receta no encontrada con el nombre: $nombreReceta");
+  }
+  final String recipeId = recipeQuery.docs.first.id;
+  print(recipeId);
+  await db.collection('menu_especial').doc(recipeId).delete();
 }

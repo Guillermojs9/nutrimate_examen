@@ -32,7 +32,7 @@ class _RecetaDiariaScreenState extends State<RecetaDiariaScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => InsertScreen()),
+                      MaterialPageRoute(builder: (context) => MenuEspecialScreen()),
                     );
                   },
                   child: const Text('Cambiar menú'),

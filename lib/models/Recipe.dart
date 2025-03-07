@@ -7,7 +7,7 @@ class Recipe {
   final MealType type;
   final List<Map<String, dynamic>> ingredients;
   final String category;
-  final double calories;
+  final int calories;
 
   Recipe({
     required this.name,
@@ -42,7 +42,7 @@ class Recipe {
       ),
       ingredients: List<Map<String, dynamic>>.from(map['ingredients'] ?? []),
       category: map['category'] ?? '',
-      calories: map['calories'] ?? 0.0,
+      calories: 0,
     );
   }
 }
